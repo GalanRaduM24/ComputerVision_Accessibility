@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "68e890bd-9bcc-4f69-bddc-02e2ce92c702"
+      }
+    },
+    "android": {
+      "package": "com.haleluia.blind"
+    }
+  }
+}
