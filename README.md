@@ -60,3 +60,5 @@ A React Native application that uses the device's camera and OpenAI's Vision API
 - "Hey, what's in front of me" for general scene description
 - "Hey, find [object]" for targeted object detection
 - "Hey, resume" to continue analysis mode after an interruption
+
+## You can access our presentation [here](https://www.canva.com/design/DAGjy1mgwis/slWB7Rl90ZanBv3x0a2hHA/edit).
