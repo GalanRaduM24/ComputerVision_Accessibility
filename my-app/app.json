@@ -1,0 +1,65 @@
+{
+  "expo": {
+    "name": "my-app",
+    "slug": "my-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "blindapp",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.haleluia.blindapp"
+    },
+    "android": {
+      "package": "com.haleluia.blindapp",
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": ["RECORD_AUDIO", "CAMERA"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
+        }
+      ],
+      [
+        "@react-native-voice/voice",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "speechRecognitionPermission": "Allow $(PRODUCT_NAME) to securely recognize user speech"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableJetifier": true,
+            "extraProguardRules": "# Keep classes that might be used with reflection\n-keep class androidx.** { *; }\n-keep class android.support.** { *; }"
+          }
+        }
+      ],
+      "./config.plugin.js"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "9a57fe68-b797-4bdf-a61a-7d9aca097b4c"
+      }
+    }
+  }
+}
