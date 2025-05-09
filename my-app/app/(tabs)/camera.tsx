@@ -25,9 +25,9 @@ export default function Camera() {
   const [micPermissionStatus, setMicPermissionStatus] = useState<string | null>(null);
   const animatedMicVolume = useRef(new Animated.Value(0)).current;
   const [heardWakeWord, setHeardWakeWord] = useState(false);
-  const wakeWordTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const wakeWordTimeoutRef = useRef<number | null>(null);
   const [showNoMatchFeedback, setShowNoMatchFeedback] = useState(false);
-  const noMatchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const noMatchTimeoutRef = useRef<number | null>(null);
 
   // SINGLE SOURCE OF TRUTH FOR VOICE RECOGNITION
   useEffect(() => {
@@ -79,8 +79,8 @@ export default function Camera() {
             if (result !== 'granted') {
               console.log('Microphone permission denied');
               setMicPermissionStatus('denied');
-              return;
-            }
+          return;
+        }
           }
           setMicPermissionStatus('granted');
         }
@@ -98,10 +98,10 @@ export default function Camera() {
           // to avoid NativeEventEmitter warnings
           
           // Set up listeners - ONLY PLACE where listeners are attached
-          try {
+        try {
             Voice.onSpeechStart = (e) => {
               // Minimal logging - just set state
-              setIsListening(true);
+            setIsListening(true);
             };
             
             Voice.onSpeechEnd = (e) => {
@@ -117,7 +117,7 @@ export default function Camera() {
                     Voice.start('en-US');
                   } catch (err) {
                     console.log('Error restarting after speech end:', err);
-                  }
+            }
                 }
               }, 300);
             };
@@ -127,14 +127,14 @@ export default function Camera() {
           
           // Set up results handler
           try {
-            Voice.onSpeechResults = (e: SpeechResultsEvent) => {
-              try {
+          Voice.onSpeechResults = (e: SpeechResultsEvent) => {
+            try {
                 console.log('VOICE EVENT: Speech results', e);
-                
+              
                 if (!e?.value || !Array.isArray(e.value) || e.value.length === 0) {
-                  return;
-                }
-                
+                return;
+              }
+              
                 // Log all recognized options
                 const recognizedText = e.value.map(text => text?.toLowerCase().trim()).filter(Boolean);
                 console.log('ALL HEARD OPTIONS:', recognizedText.join(', '));
@@ -195,27 +195,27 @@ export default function Camera() {
                     wakeWordTimeoutRef.current = setTimeout(() => {
                       setHeardWakeWord(false);
                     }, 3000);
-                    
+                  
                     // Check if we're in analysis mode and interrupt it
                     if (isActiveRef.current) {
                       console.log('Analysis mode is active, interrupting for voice command');
                       // Stop ongoing analysis
-                      setIsActive(false);
-                      isActiveRef.current = false;
-                      
+                  setIsActive(false);
+                  isActiveRef.current = false;
+                  
                       // Stop any ongoing speech
                       Speech.stop();
                       
                       // Provide feedback
                       Speech.speak("Yes? How can I help?", { rate: 1.0, pitch: 1.0 });
-                    } else {
+              } else {
                       // Regular voice command flow (not in analysis mode)
                       Speech.stop();
                       Speech.speak("Yes?", { rate: 1.0, pitch: 1.0 });
                     }
                     
                     // Process command
-                    setTimeout(() => {
+                setTimeout(() => {
                       handleVoiceCommand(recognizedText[0]);
                     }, 500);
                   } else {
@@ -228,13 +228,13 @@ export default function Camera() {
             };
           } catch (err) {
             console.log('Error setting speech results handler:', err);
-          }
+              }
           
           try {
-            Voice.onSpeechError = (e: SpeechErrorEvent) => {
+          Voice.onSpeechError = (e: SpeechErrorEvent) => {
               // Log all errors but don't respond to most of them
               console.log('VOICE EVENT: Speech error', e);
-              
+            
               // IGNORE MOST COMMON ERRORS that don't require restart
               // Code 7: "No match" - No speech detected
               // Code 5: "Client side error" - Often recovers on its own
@@ -245,7 +245,7 @@ export default function Camera() {
                   e?.error?.code === "6" ||
                   e?.error?.code === "4") {
                 console.log(`Ignoring error code ${e?.error?.code} - continuing without restart`);
-                
+              
                 // Show visual feedback that an error occurred but we're continuing
                 setVoiceError(`Error ${e?.error?.code} ignored, still listening`);
                 setTimeout(() => {
@@ -260,12 +260,12 @@ export default function Camera() {
               // Only restart for critical error types
               console.log('Critical error occurred, restarting voice recognition');
               if (voiceCommandEnabled) {
-                setTimeout(() => {
+              setTimeout(() => {
                   Voice.start('en-US');
                   console.log('Voice recognition restarted after critical error');
                 }, 500);
-              }
-            };
+            }
+          };
           } catch (err) {
             console.log('Error setting speech error handler:', err);
           }
@@ -289,10 +289,10 @@ export default function Camera() {
                 }
               }
             };
-          } catch (err) {
+        } catch (err) {
             console.log('Error setting speech volume handler:', err);
-          }
-          
+        }
+        
           // Start listening with minimal settings
           await Voice.start('en-US');
           console.log('Voice recognition started');
@@ -320,16 +320,16 @@ export default function Camera() {
           // Only check and restart if not already listening
           if (Voice.isRecognizing && typeof Voice.isRecognizing === 'function') {
             const isActive = await Voice.isRecognizing();
-            
+        
             if (!isActive) {
               console.log('WATCHDOG: Voice recognition not running, restarting it');
-              await Voice.start('en-US');
+            await Voice.start('en-US');
             }
           }
-        }
+                }
       } catch (err) {
         // Silent error handling - don't log
-      }
+              }
     }, 60000); // Check only once per minute
     
     // Start the setup
@@ -348,9 +348,9 @@ export default function Camera() {
         
         // Then try to destroy after a short delay
         setTimeout(() => {
-          if (Voice) {
+        if (Voice) {
             Voice.destroy().catch(e => console.log('Error destroying Voice on unmount:', e));
-          }
+        }
         }, 300);
       } catch (e) {
         console.error('Error cleaning up Voice on unmount:', e);
@@ -360,7 +360,7 @@ export default function Camera() {
 
   // Check for speech to interrupt - run in separate effect
   useEffect(() => {
-    let checkInterval: NodeJS.Timeout | null = null;
+    let checkInterval: number | null = null;
     
     if (voiceAvailable) {
       // Start periodic check for interruption
@@ -409,14 +409,14 @@ export default function Camera() {
     }
     
     try {
-      await Voice.start('en-US');
+        await Voice.start('en-US');
       console.log('Voice recognition started manually');
     } catch (error) {
       console.error('Error starting voice recognition:', error);
       setVoiceError('Failed to start voice recognition');
     }
   };
-
+  
   const stopListening = async () => {
     if (!voiceAvailable || !isListening) {
       return;
@@ -433,13 +433,13 @@ export default function Camera() {
   const handleVoiceCommand = async (text: string) => {
     try {
       // Set processing flag to prevent duplicate handling
-      isProcessingVoiceRef.current = true;
+    isProcessingVoiceRef.current = true;
       
       // Always make sure we're not actively analyzing if we're processing a voice command
       if (isActiveRef.current) {
         console.log('Stopping ongoing analysis to handle voice command');
-        setIsActive(false);
-        isActiveRef.current = false;
+      setIsActive(false);
+      isActiveRef.current = false;
       }
       
       // Stop current speech and analysis
@@ -540,8 +540,8 @@ export default function Camera() {
     } finally {
       // Reset processing flag
       setTimeout(() => {
-        isProcessingVoiceRef.current = false;
-        
+      isProcessingVoiceRef.current = false;
+      
         // Resume voice listening
         startListening();
       }, 500);
@@ -664,7 +664,7 @@ export default function Camera() {
           {
             role: "user",
             content: [
-              { type: "text", text: "Provide a general description of this image for a blind person. Describe what's in the scene without focusing on specific tasks. Be concise but informative - 25-35 words." },
+              { type: "text", text: "Describe the user's surroundings for a blind person. Focus on identifying potential hazards (obstacles, dangerous objects, moving vehicles, etc.), and mention if there are humans present (and their location or activity if possible). Be concise but informative (25-35 words)." },
               {
                 type: "image_url",
                 image_url: {
@@ -900,7 +900,7 @@ export default function Camera() {
       
       Speech.speak("Voice assistant ready. Say 'Hey' clearly for voice commands.", {
         rate: 0.9, // Slower rate for better clarity
-        pitch: 1.0,
+            pitch: 1.0,
         volume: 1.0 // Full volume for initial instruction
       });
       
@@ -950,7 +950,7 @@ export default function Camera() {
         
         // Explicitly set new listeners
         Voice.onSpeechStart = (e) => {
-          setIsListening(true);
+    setIsListening(true);
         };
         
         Voice.onSpeechEnd = (e) => {
@@ -962,7 +962,7 @@ export default function Camera() {
                 Voice.start('en-US');
               } catch (err) {
                 console.log('Error restarting after speech end:', err);
-              }
+    }
             }
           }, 300);
         };
@@ -970,7 +970,7 @@ export default function Camera() {
         Voice.onSpeechError = (e: SpeechErrorEvent) => {
           // Log all errors but don't respond to most of them
           console.log('VOICE EVENT: Speech error', e);
-          
+      
           // IGNORE MOST COMMON ERRORS that don't require restart
           if (e?.error?.code === "7" || 
               e?.error?.code === "5" || 
@@ -988,7 +988,7 @@ export default function Camera() {
             }, 500);
           }
         };
-        
+      
         // Start with minimal settings to avoid initialization errors
         await Voice.start('en-US');
         console.log('Voice recognition restarted successfully after full reset');
@@ -999,16 +999,39 @@ export default function Camera() {
         
         // Update state
         setIsListening(true);
-      } catch (e) {
+          } catch (e) {
         console.error('Error starting voice recognition during reset:', e);
         setVoiceError('Failed to restart voice recognition');
-      }
-    } catch (error) {
+          }
+      } catch (error) {
       console.error('Error in force reset:', error);
       setVoiceError('Error during voice reset');
     }
   };
-  
+
+  // Add a function to toggle both analysis and voice commands
+  const toggleAll = () => {
+    if (isActive || voiceCommandEnabled) {
+      // Stop everything
+      setIsActive(false);
+      isActiveRef.current = false;
+      setVoiceCommandEnabled(false);
+      stopListening();
+      Speech.stop();
+      Speech.speak('All analysis and voice commands stopped.', { rate: 1.1, pitch: 1.0 });
+    } else {
+      // Start everything
+      setIsActive(true);
+      isActiveRef.current = true;
+      setVoiceCommandEnabled(true);
+      setTimeout(() => {
+        startListening();
+        takePictureAndAnalyze();
+      }, 1000);
+      Speech.speak('All analysis and voice commands started.', { rate: 1.1, pitch: 1.0 });
+    }
+  };
+
   if (!permission) {
     console.log('Camera permission is still loading');
     return (
@@ -1055,7 +1078,7 @@ export default function Camera() {
           {/* Title and status bar */}
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Vision Assistant</Text>
-            <View style={styles.statusBar}>
+        <View style={styles.statusBar}>
               <View style={[styles.statusIndicator, voiceCommandEnabled ? styles.statusActive : styles.statusInactive]} />
               <Text style={styles.statusText}>Voice Commands: {voiceCommandEnabled ? 'ON' : 'OFF'}</Text>
             </View>
@@ -1085,20 +1108,20 @@ export default function Camera() {
             <View style={styles.listeningContainer}>
               <View style={styles.listeningIndicator}>
                 <Text style={styles.listeningText}>Listening</Text>
-                <View style={styles.volumeContainer}>
-                  <Animated.View 
-                    style={[
-                      styles.volumeBar, 
-                      { 
-                        width: animatedMicVolume.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: ['0%', '100%']
-                        }) 
-                      }
-                    ]} 
-                  />
-                </View>
+              <View style={styles.volumeContainer}>
+                <Animated.View 
+                  style={[
+                    styles.volumeBar, 
+                    { 
+                      width: animatedMicVolume.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ['0%', '100%']
+                      }) 
+                    }
+                  ]} 
+                />
               </View>
+            </View>
             </View>
           )}
           
@@ -1125,58 +1148,75 @@ export default function Camera() {
           {showNoMatchFeedback && (
             <View style={styles.noMatchContainer}>
               <Text style={styles.noMatchText}>Silence detected (still listening)</Text>
-            </View>
-          )}
+          </View>
+        )}
         </View>
 
         {/* Control buttons - positioned absolutely */}
         <View style={styles.controlsContainer}>
           {/* Main controls row */}
           <View style={styles.mainControlsRow}>
-            {/* Main action button */}
-            <TouchableOpacity 
-              style={[
-                styles.mainButton, 
-                isActive ? styles.stopButton : styles.startButton
-              ]} 
-              onPress={toggleAnalysis}
-              disabled={isAnalyzing && !isActive}
-              accessibilityLabel={isActive ? "Stop analysis" : "Start analysis"}
-              accessibilityHint={isActive ? "Stops analyzing your surroundings" : "Starts analyzing and describing your surroundings"}
-            >
-              <Text style={[
-                styles.mainButtonText,
-                isActive && styles.stopButtonText
-              ]}>
+          {/* Main action button */}
+          <TouchableOpacity 
+            style={[
+              styles.mainButton, 
+              isActive ? styles.stopButton : styles.startButton
+            ]} 
+            onPress={toggleAnalysis}
+            disabled={isAnalyzing && !isActive}
+            accessibilityLabel={isActive ? "Stop analysis" : "Start analysis"}
+            accessibilityHint={isActive ? "Stops analyzing your surroundings" : "Starts analyzing and describing your surroundings"}
+          >
+            <Text style={[
+              styles.mainButtonText,
+              isActive && styles.stopButtonText
+            ]}>
                 {isActive ? 'Stop Analysis' : 'Start Analysis'}
-              </Text>
-            </TouchableOpacity>
+            </Text>
+          </TouchableOpacity>
+          {/* Start/Stop Everything button */}
+          <TouchableOpacity 
+            style={[
+              styles.mainButton, 
+              (isActive || voiceCommandEnabled) ? styles.stopButton : styles.startButton
+            ]} 
+            onPress={toggleAll}
+            accessibilityLabel={(isActive || voiceCommandEnabled) ? "Stop everything" : "Start everything"}
+            accessibilityHint={(isActive || voiceCommandEnabled) ? "Stops all analysis and voice commands" : "Starts all analysis and voice commands"}
+          >
+            <Text style={[
+              styles.mainButtonText,
+              (isActive || voiceCommandEnabled) && styles.stopButtonText
+            ]}>
+                {(isActive || voiceCommandEnabled) ? 'Stop Everything' : 'Start Everything'}
+            </Text>
+          </TouchableOpacity>
           </View>
-          
+
           {/* Secondary controls row */}
           <View style={styles.secondaryControlsRow}>
-            {/* Voice command toggle button */}
-            {voiceAvailable && (
-              <TouchableOpacity 
-                style={[
-                  styles.voiceToggleButton,
-                  voiceCommandEnabled ? styles.voiceEnabledButton : styles.voiceDisabledButton
-                ]} 
-                onPress={toggleVoiceCommands}
-              >
-                <Text style={styles.buttonText}>
-                  Voice: {voiceCommandEnabled ? 'ON' : 'OFF'}
-                </Text>
-              </TouchableOpacity>
-            )}
-            
-            {/* Force restart button */}
+          {/* Voice command toggle button */}
+          {voiceAvailable && (
             <TouchableOpacity 
+              style={[
+                styles.voiceToggleButton,
+                voiceCommandEnabled ? styles.voiceEnabledButton : styles.voiceDisabledButton
+              ]} 
+              onPress={toggleVoiceCommands}
+            >
+              <Text style={styles.buttonText}>
+                  Voice: {voiceCommandEnabled ? 'ON' : 'OFF'}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+            {/* Force restart button */}
+          <TouchableOpacity 
               style={styles.forceRestartButton} 
               onPress={forceResetVoiceRecognition}
-            >
+          >
               <Text style={styles.buttonText}>Reset Voice</Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
           </View>
           
           {/* Recognized text display */}

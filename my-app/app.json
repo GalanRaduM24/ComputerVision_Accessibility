@@ -47,8 +47,7 @@
             "extraProguardRules": "# Keep classes that might be used with reflection\n-keep class androidx.** { *; }\n-keep class android.support.** { *; }"
           }
         }
-      ],
-      "./config.plugin.js"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
