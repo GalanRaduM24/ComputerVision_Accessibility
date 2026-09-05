@@ -1,66 +1,120 @@
-# Vision Assistant App
+# Vision Assistant: AI-Powered Environmental Accessibility
 
-A React Native application that uses the device's camera and OpenAI's Vision API to provide audio descriptions of surroundings. The app features voice commands for accessibility and is designed primarily for visually impaired users.
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React Native](https://img.shields.io/badge/React%20Native-Expo-61DAFB?logo=react&logoColor=white)](https://reactnative.dev/)
+[![OpenAI](https://img.shields.io/badge/AI-OpenAI%20Vision%20%26%20Audio-412991?logo=openai&logoColor=white)](https://openai.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-https://github-production-user-asset-6210df.s3.amazonaws.com/119741950/433049317-81a3aaa0-9826-43e8-adfb-956f6129322a.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250509%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250509T215351Z&X-Amz-Expires=300&X-Amz-Signature=40e4acfc43dbdf94fb8c5e0e5fd1f258971dc02cdbbabb4f75c125700872378c&X-Amz-SignedHeaders=host
+An intelligent, voice-first assistive mobile application built with **React Native (Expo)** and **OpenAI GPT-4 Vision**. Designed specifically for visually impaired users, the application continuously interprets the physical environment through the device camera and delivers low-latency, real-time auditory scene descriptions and object localization.
 
+---
 
+## Architecture Overview
 
-## Setup Instructions
+```text
+┌──────────────────────────────────────────────────────────────────────────┐
+│                     Voice & Accessibility Input                          │
+│  • Continuous Hotword Detection ("Hey...")                               │
+│  • Intent Extraction & Voice Query Routing                               │
+└────────────────────────────────────┬─────────────────────────────────────┘
+                                     │ triggers
+                                     ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│                      Device Vision & Frame Capture                       │
+│  • High-Resolution Live Camera Stream (Expo Camera)                      │
+│  • Frame Preprocessing, Encoding & Aspect Ratio Optimization             │
+└────────────────────────────────────┬─────────────────────────────────────┘
+                                     │ payload
+                                     ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│                     Multimodal AI Reasoning Engine                       │
+│  • OpenAI GPT-4 Vision: Spatial Analysis & Object Localization           │
+│  • Contextual Prompt Engineering for Accessibility Guidance              │
+└────────────────────────────────────┬─────────────────────────────────────┘
+                                     │ natural language response
+                                     ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│                       Text-to-Speech Audio Output                        │
+│  • Real-time Audio Guidance & Directional Haptic Cues                     │
+└──────────────────────────────────────────────────────────────────────────┘
+```
 
-1. Clone the repository
-   ```
-   git clone <repository-url>
-   cd <repository-directory>
-   ```
+---
 
-2. Install dependencies
-   ```
-   cd my-app
-   npm install
-   ```
+## Key Features
 
-3. Set up configuration files
-   - Create a `config.ts` file in the `my-app` directory using the template:
-     ```
-     cp my-app/config.template.ts my-app/config.ts
-     ```
-   - Edit `my-app/config.ts` and add your OpenAI API key:
-     ```typescript
-     export const config = {
-       openaiApiKey: 'your-openai-api-key-here'
-     };
-     ```
+- **Hands-Free Voice Activation**: Continuous audio monitoring for hotwords ("Hey") allowing fully hands-free operation.
+- **Real-Time Scene Interpretation**: Generates comprehensive natural language summaries of the immediate surroundings, obstacles, and navigation paths.
+- **Targeted Object Localization**: Ask specifically for items (e.g. "find my keys", "where is the door") with spatial guidance relative to the user.
+- **Haptic & Visual Accessibility State**: Haptic feedback cues and high-contrast status indicators tailored for low-vision workflows.
 
-4. Create a `.env` file (optional)
-   - Create a `.env` file in the `my-app` directory:
-     ```
-     OPENAI_API_KEY=your-openai-api-key-here
-     ```
-
-5. Start the application
-   ```
-   npm start
-   ```
-
-## Features
-
-- Voice command recognition with "Hey" wake word
-- Scene description mode for general environment analysis
-- Task-specific help mode for targeted assistance
-- Continuous voice recognition for hands-free operation
-- Visual status indicators for accessibility
-
-## Project Structure
-
-- `my-app/app/(tabs)/camera.tsx`: Main camera functionality and voice recognition
-- `my-app/components/`: Reusable UI components
-- `my-app/constants/`: Application constants
-- `my-app/hooks/`: Custom React hooks
+---
 
 ## Voice Commands
 
-- Say "Hey" to activate voice recognition
-- "Hey, what's in front of me" for general scene description
-- "Hey, find [object]" for targeted object detection
-- "Hey, resume" to continue analysis mode after an interruption
+| Command | Action |
+|:---|:---|
+| `"Hey"` | Activates listening mode |
+| `"Hey, what's in front of me"` | Initiates full scene analysis and describes environment |
+| `"Hey, find [item]"` | Targets specific object and describes relative direction/distance |
+| `"Hey, resume"` | Re-enables automated continuous scanning mode |
+
+---
+
+## Project Structure
+
+```text
+my-app/
+├── app/
+│   ├── (tabs)/
+│   │   ├── camera.tsx         # Main camera interface & continuous vision loop
+│   │   ├── explore.tsx        # Secondary exploration tools
+│   │   └── index.tsx          # Initial entry point & accessibility setup
+│   └── _layout.tsx            # Global navigation & audio/haptic providers
+├── components/                # Reusable accessible UI components
+├── constants/                 # Theme colors, styling tokens, and hotword constants
+├── hooks/                     # Custom React hooks (voice recognition, permissions)
+├── config.plugin.js           # Expo native configuration plugins
+└── package.json               # Project dependencies and run scripts
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18.x or higher
+- npm or yarn
+- OpenAI API Key (with GPT-4 Vision access)
+- Expo Go app installed on your physical iOS/Android device
+
+### Installation & Configuration
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/GalanRaduM24/ComputerVision_Accessibility.git
+   cd ComputerVision_Accessibility/my-app
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Configure API credentials**:
+   Copy the configuration template and insert your OpenAI API key:
+   ```bash
+   cp config.template.ts config.ts
+   ```
+   In `config.ts`:
+   ```typescript
+   export const config = {
+     openaiApiKey: 'your-openai-api-key-here'
+   };
+   ```
+
+4. **Start the development server**:
+   ```bash
+   npx expo start
+   ```
+   Scan the QR code with your mobile device via **Expo Go** (Android) or the **Camera** app (iOS).
